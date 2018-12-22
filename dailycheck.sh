@@ -18,7 +18,7 @@ mkdir -p tmp
 > ./tmp/u4_temp.tmp
 > ./tmp/mac.tmp
 
-today=$(date -d'15 days ago' '+%m-%d')
+today=$(date -d'1 days ago' '+%m-%d')
 echo "${today}" >> temp.txt
 
 
