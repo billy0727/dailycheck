@@ -3,7 +3,7 @@
 # version:1.1
 # everyday nodes operation check by sensor_engine.log and set in the crontab 
 # Billy Hsia
-# fuction: calulate yesterday n3, n4, LQI(avg,sd), n2(avg,sd)
+# fuction: calulate yesterday u3(avg,sd), u4(avg,sd), LQI(avg,sd), n2(avg,sd)
 # fix record
   # 2018/12/17 first version
   # 2018/12/19 cp report.txt to /gv-admin/public
