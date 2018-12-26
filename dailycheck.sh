@@ -1,31 +1,26 @@
 #! /bin/bash
-# dailycheck.sh (temp.txt, node_temp.txt /tmp/ must exist)
-# version:1.1
-# everyday nodes operation check by sensor_engine.log and set in the crontab 
+# dailycheck.sh (/home/mwg/dailycheck/temp.txt, /home/mwg/dailycheck/node_temp.txt /tmp/ must exist)
+# All nodes check by sensor_engine.log and set in the crontab 
 # Billy Hsia
 # fuction: calulate yesterday u3(avg,sd), u4(avg,sd), LQI(avg,sd), n2(avg,sd)
-# fix record
-  # 2018/12/17 first version
-  # 2018/12/19 cp report.txt to /gv-admin/public
-  # 2018/12/19 all node report and each node report
 
 # clean temp files
-mkdir -p tmp
-> ./tmp/lqi_avg_temp.tmp
-> ./tmp/lqi_sd_temp.tmp
-> ./tmp/dataloss_temp.tmp
-> ./tmp/u3_temp.tmp
-> ./tmp/u4_temp.tmp
-> ./tmp/mac.tmp
+mkdir -p /home/mwg/dailycheck/tmp
+> /home/mwg/dailycheck/tmp/lqi_avg_temp.tmp
+> /home/mwg/dailycheck/tmp/lqi_sd_temp.tmp
+> /home/mwg/dailycheck/tmp/dataloss_temp.tmp
+> /home/mwg/dailycheck/tmp/u3_temp.tmp
+> /home/mwg/dailycheck/tmp/u4_temp.tmp
+> /home/mwg/dailycheck/tmp/mac.tmp
 
-today=$(date -d'1 days ago' '+%m-%d')
-echo "${today}" >> temp.txt
+today=$(date -d'7 days ago' '+%m-%d')
+echo "${today}" >> /home/mwg/dailycheck/temp.txt
 
 
 #u3
-#cat sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a u3, |wc -l >> temp.txt
+#cat sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a u3, |wc -l >> /home/mwg/dailycheck/temp.txt
 #u4
-#cat sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a u4, |wc -l >> temp.txt
+#cat sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a u4, |wc -l >> /home/mwg/dailycheck/temp.txt
 
 
 # clean temp files
@@ -38,56 +33,56 @@ macstxt=$(cat /opt/mwg/macs.txt |grep -a Add |awk '{$1=null ;print}')
 #macstxt="0109D641 0109D625"
 for node in $macstxt 
 do
-  echo "${node}" >> ./tmp/mac.tmp
-  echo "${node}" >> node_temp.txt
-  echo "${today}" >> node_temp.txt
+  echo "${node}" >> /home/mwg/dailycheck/tmp/mac.tmp
+  echo "${node}" >> /home/mwg/dailycheck/node_temp.txt
+  echo "${today}" >> /home/mwg/dailycheck/node_temp.txt
   #u3
   u3=$(cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a u3,${node} |wc -l)
-  echo ${u3} >> ./tmp/u3_temp.tmp
-  echo ${u3} >> node_temp.txt
+  echo ${u3} >> /home/mwg/dailycheck/tmp/u3_temp.tmp
+  echo ${u3} >> /home/mwg/dailycheck/node_temp.txt
   #u4
   u4=$(cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a u4,${node} |wc -l)
-  echo ${u4} >> ./tmp/u4_temp.tmp
-  echo ${u4} >> node_temp.txt
+  echo ${u4} >> /home/mwg/dailycheck/tmp/u4_temp.tmp
+  echo ${u4} >> /home/mwg/dailycheck/node_temp.txt
   #lqi avg,sd
-  cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a n2,${node} |awk '{print $5}' > ./tmp/lqi_data.tmp
-  lqi_avg=$(cat ./tmp/lqi_data.tmp | awk '{sum+=$1} END {print sum/NR}')
-  echo ${lqi_avg} >> ./tmp/lqi_avg_temp.tmp
-  echo ${lqi_avg} >> node_temp.txt
-  lqi_sd=$(cat ./tmp/lqi_data.tmp | awk '{x[NR]=$0; s+=$0; n++} END{a=s/n; for (i in x){ss += (x[i]-a)^2} sd = sqrt(ss/n); print sd}')
-  echo ${lqi_sd} >> ./tmp/lqi_sd_temp.tmp
-  echo ${lqi_sd} >> node_temp.txt
+  cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a n2,${node} |awk '{print $5}' > /home/mwg/dailycheck/tmp/lqi_data.tmp
+  lqi_avg=$(cat /home/mwg/dailycheck/tmp/lqi_data.tmp | awk '{sum+=$1} END {print sum/NR}')
+  echo ${lqi_avg} >> /home/mwg/dailycheck/tmp/lqi_avg_temp.tmp
+  echo ${lqi_avg} >> /home/mwg/dailycheck/node_temp.txt
+  lqi_sd=$(cat /home/mwg/dailycheck/tmp/lqi_data.tmp | awk '{x[NR]=$0; s+=$0; n++} END{a=s/n; for (i in x){ss += (x[i]-a)^2} sd = sqrt(ss/n); print sd}')
+  echo ${lqi_sd} >> /home/mwg/dailycheck/tmp/lqi_sd_temp.tmp
+  echo ${lqi_sd} >> /home/mwg/dailycheck/node_temp.txt
   #n2(dataloss)
-  n2=$(cat ./tmp/lqi_data.tmp | wc -l)
-  echo ${n2} >> ./tmp/dataloss_temp.tmp
-  echo ${n2} >> node_temp.txt
+  n2=$(cat /home/mwg/dailycheck/tmp/lqi_data.tmp | wc -l)
+  echo ${n2} >> /home/mwg/dailycheck/tmp/dataloss_temp.tmp
+  echo ${n2} >> /home/mwg/dailycheck/node_temp.txt
 done
 
 # AVG,SD(u3,u4)
-cat ./tmp/u3_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> temp.txt
-cat ./tmp/u3_temp.tmp | awk '{x[NR]=$0; s+=$0; n++} END{a=s/n; for (i in x){ss += (x[i]-a)^2} sd = sqrt(ss/n); print sd}' >> temp.txt
-cat ./tmp/u4_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> temp.txt
-cat ./tmp/u4_temp.tmp | awk '{x[NR]=$0; s+=$0; n++} END{a=s/n; for (i in x){ss += (x[i]-a)^2} sd = sqrt(ss/n); print sd}' >> temp.txt
+cat /home/mwg/dailycheck/tmp/u3_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> /home/mwg/dailycheck/temp.txt
+cat /home/mwg/dailycheck/tmp/u3_temp.tmp | awk '{x[NR]=$0; s+=$0; n++} END{a=s/n; for (i in x){ss += (x[i]-a)^2} sd = sqrt(ss/n); print sd}' >> /home/mwg/dailycheck/temp.txt
+cat /home/mwg/dailycheck/tmp/u4_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> /home/mwg/dailycheck/temp.txt
+cat /home/mwg/dailycheck/tmp/u4_temp.tmp | awk '{x[NR]=$0; s+=$0; n++} END{a=s/n; for (i in x){ss += (x[i]-a)^2} sd = sqrt(ss/n); print sd}' >> /home/mwg/dailycheck/temp.txt
 
 # AVG(nodes avg and sd) 
-cat ./tmp/lqi_avg_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> temp.txt
-cat ./tmp/lqi_sd_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> temp.txt
+cat /home/mwg/dailycheck/tmp/lqi_avg_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> /home/mwg/dailycheck/temp.txt
+cat /home/mwg/dailycheck/tmp/lqi_sd_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> /home/mwg/dailycheck/temp.txt
 
 # n2() and dataloss%()
-cat ./tmp/dataloss_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> temp.txt
-cat ./tmp/dataloss_temp.tmp | awk '{x[NR]=$0; s+=$0; n++} END{a=s/n; for (i in x){ss += (x[i]-a)^2} sd = sqrt(ss/n); print sd}' >> temp.txt
+cat /home/mwg/dailycheck/tmp/dataloss_temp.tmp | awk '{sum+=$1} END {print sum/NR}' >> /home/mwg/dailycheck/temp.txt
+cat /home/mwg/dailycheck/tmp/dataloss_temp.tmp | awk '{x[NR]=$0; s+=$0; n++} END{a=s/n; for (i in x){ss += (x[i]-a)^2} sd = sqrt(ss/n); print sd}' >> /home/mwg/dailycheck/temp.txt
 
 #Reports Collection
-printf '%2s\t %8s\t %8s\t %8s\t %8s\t %8s\t %8s\t %8s\t %8s\t \n' $(cat temp.txt) > report
-printf '%8s\t %8s\t %8s\t %8s\t %8s\t %8s\t %8s\t \n' $(cat node_temp.txt) > nodereport
-cp report ~/gv-admin/public
-cp nodereport ~/gv-admin/public
+printf '%2s\t %8s\t %8s\t %8s\t %8s\t %8s\t %8s\t %8s\t %8s\t \n' $(cat /home/mwg/dailycheck/temp.txt) > /home/mwg/dailycheck/report
+printf '%8s\t %8s\t %8s\t %8s\t %8s\t %8s\t %8s\t \n' $(cat /home/mwg/dailycheck/node_temp.txt) > /home/mwg/dailycheck/nodereport
+cp /home/mwg/dailycheck/report /home/mwg/gv-admin/public
+cp /home/mwg/dailycheck/nodereport /home/mwg/gv-admin/public
 #cat report.txt
 #echo ""
 #cat node_report.txt
 
 #each_node_report_by node_report.txt
-file=./tmp/mac.tmp
+file=/home/mwg/dailycheck/tmp/mac.tmp
 seq=1
 while read line
 do
@@ -97,7 +92,8 @@ done < $file
 
 for ((i=1;i<=${#lines[@]};i++))
 do
-    cat nodereport |grep -a -e Node -e ${lines[$i]} > ${lines[$i]}
-    cp ${lines[$i]} ~/gv-admin/public
+    cat /home/mwg/dailycheck/nodereport |grep -a -e Node -e ${lines[$i]} > ${lines[$i]}
+    cp /home/mwg/dailycheck/${lines[$i]} /home/mwg/gv-admin/public
 done
+
 
