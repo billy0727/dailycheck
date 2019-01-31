@@ -3,6 +3,8 @@
 # All nodes check by sensor_engine.log and set in the crontab 
 # Billy Hsia
 # fuction: calulate yesterday u3(avg,sd), u4(avg,sd), LQI(avg,sd), n2(avg,sd)
+# add command as follow in /etc/crontab 
+# 1 7 * * *       mwg     /bin/bash /home/mwg/dailycheck/dailycheck.sh
 
 # clean temp files
 mkdir -p /home/mwg/dailycheck/tmp
