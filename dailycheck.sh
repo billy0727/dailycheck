@@ -86,16 +86,10 @@ cp /home/mwg/dailycheck/nodereport /home/mwg/gv-admin/public
 #each_node_report_by node_report.txt
 file=/home/mwg/dailycheck/tmp/mac.tmp
 seq=1
-while read line
+while read line;
 do
-    lines[$seq]=$line
-    ((seq++))
+    cat /home/mwg/dailycheck/nodereport |grep -a -e Node -e ${line} > /home/mwg/dailycheck/${line}
+    cp /home/mwg/dailycheck/${line} /home/mwg/gv-admin/public
 done < $file
-
-for ((i=1;i<=${#lines[@]};i++))
-do
-    cat /home/mwg/dailycheck/nodereport |grep -a -e Node -e ${lines[$i]} > ${lines[$i]}
-    cp /home/mwg/dailycheck/${lines[$i]} /home/mwg/gv-admin/public
-done
 
 
