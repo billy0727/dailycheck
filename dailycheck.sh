@@ -16,7 +16,7 @@ mkdir -p /home/mwg/dailycheck/tmp
 > /home/mwg/dailycheck/tmp/u22_temp.tmp
 > /home/mwg/dailycheck/tmp/mac.tmp
 
-today=$(date -d'115 days ago' '+%m-%d')
+today=$(date -d'1 days ago' '+%m-%d')
 echo "${today}" >> /home/mwg/dailycheck/temp.txt
 
 
