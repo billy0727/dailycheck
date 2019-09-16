@@ -48,9 +48,9 @@ do
   echo ${u4} >> /home/mwg/dailycheck/tmp/u4_temp.tmp
   echo ${u4} >> /home/mwg/dailycheck/node_temp.txt
   #u22
-  u4=$(cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a u22,${node} |wc -l)
-  echo ${u4} >> /home/mwg/dailycheck/tmp/u22_temp.tmp
-  echo ${u4} >> /home/mwg/dailycheck/node_temp.txt
+  u22=$(cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a u22,${node} |wc -l)
+  echo ${u22} >> /home/mwg/dailycheck/tmp/u22_temp.tmp
+  echo ${u22} >> /home/mwg/dailycheck/node_temp.txt
   #lqi avg,sd
   cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a n2,${node} |awk '{print $5}' > /home/mwg/dailycheck/tmp/lqi_data.tmp
   lqi_avg=$(cat /home/mwg/dailycheck/tmp/lqi_data.tmp | awk '{sum+=$1} END {print sum/NR}')
