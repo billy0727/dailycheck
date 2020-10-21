@@ -52,7 +52,7 @@ do
   echo ${u22} >> /home/mwg/dailycheck/tmp/u22_temp.tmp
   echo ${u22} >> /home/mwg/dailycheck/node_temp.txt
   #lqi avg,sd
-  cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a n2,${node} |awk '{print $5}' > /home/mwg/dailycheck/tmp/lqi_data.tmp
+  cat /var/log/sensor_engine.log |grep -a Debug |grep -a ${today} |grep -a n2,${node} |cut -d , -f 4 > /home/mwg/dailycheck/tmp/lqi_data.tmp
   lqi_avg=$(cat /home/mwg/dailycheck/tmp/lqi_data.tmp | awk '{sum+=$1} END {print sum/NR}')
   echo ${lqi_avg} >> /home/mwg/dailycheck/tmp/lqi_avg_temp.tmp
   echo ${lqi_avg} >> /home/mwg/dailycheck/node_temp.txt
