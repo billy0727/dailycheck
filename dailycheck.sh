@@ -35,8 +35,13 @@ echo "${today}" >> /home/mwg/dailycheck/temp.txt
 #macstxt=$(cat /opt/mwg/macs.txt |grep -a Add |awk '{$1=null ;print}')
 #macstxt="0109D641 0109D625"
 
-echo "select pad_mac from beds where resident_id is not NULL" |mysql -u root -pbds316 gv > /home/mwg/dailycheck/macs.txt
-sed -i '1d' /home/mwg/dailycheck/macs.txt
+echo "select pad_mac from beds where resident_id is not NULL" |mysql -u root -pbds316 gv > /home/mwg/dailycheck/tr.txt
+sed -i '1d' /home/mwg/dailycheck/tr.txt
+echo "select mac from repeaters where status=1" |mysql -u root -pbds316 gv > /home/mwg/dailycheck/rpr.txt
+sed -i '1d' /home/mwg/dailycheck/rpr.txt
+cat tr.txt > macs.txt
+cat rpr.txt >> macs.txt
+
 macstxt=$(cat /home/mwg/dailycheck/macs.txt)
 
 
