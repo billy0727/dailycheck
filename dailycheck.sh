@@ -32,8 +32,14 @@ echo "${today}" >> /home/mwg/dailycheck/temp.txt
 #> dataloss_temp.txt
 
 # AVG(nodes), SD(nodes)
-macstxt=$(cat /opt/mwg/macs.txt |grep -a Add |awk '{$1=null ;print}')
+#macstxt=$(cat /opt/mwg/macs.txt |grep -a Add |awk '{$1=null ;print}')
 #macstxt="0109D641 0109D625"
+
+echo "select pad_mac from beds where resident_id is not NULL" |mysql -u root -pbds316 gv > /home/mwg/dailycheck/macs.txt
+sed -i '1d' /home/mwg/dailycheck/macs.txt
+macstxt=$(cat /home/mwg/dailycheck/macs.txt)
+
+
 for node in $macstxt 
 do
   echo "${node}" >> /home/mwg/dailycheck/tmp/mac.tmp
